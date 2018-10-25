@@ -55,6 +55,8 @@ func (c *dnsClient) LookupIP(ip net.IP) (*Response, error) {
 		}
 
 		ret.Country = strings.TrimSpace(values[2])
+		
+		ret.Name = asnResponse.Name
 
 		return ret, nil
 
