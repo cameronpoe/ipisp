@@ -54,33 +54,7 @@ func (c *dnsClient) LookupIP(ip net.IP) (*Response, error) {
 			Registry: strings.ToUpper(values[3]),
 		}
 
-		var err error
-		asn, err := parseASNs(values[0])
-		if err != nil {
-			return nil, errors.Wrapf(err, "Could not parse ASN (%s)", values[0])
-		}
-		ret.ASN = asn[0]
-
 		ret.Country = strings.TrimSpace(values[2])
-
-		_, ret.Range, err = net.ParseCIDR(values[1])
-		if err != nil {
-			return nil, fmt.Errorf("Could not parse Range (%s): %s", values[1], err)
-		}
-
-		if values[4] != "" { // There's not always an allocation date available :(
-			ret.AllocatedAt, err = time.Parse("2006-01-02", values[4])
-			if err != nil {
-				return nil, fmt.Errorf("Could not parse date (%s): %s", values[4], err)
-			}
-		}
-
-		asnResponse, err := c.LookupASN(ret.ASN)
-		if err != nil {
-			return nil, fmt.Errorf("Could not retrieve ASN (%s): %s", ret.ASN.String(), err.Error())
-		}
-
-		ret.Name = asnResponse.Name
 
 		return ret, nil
 
