@@ -53,8 +53,21 @@ func (c *dnsClient) LookupIP(ip net.IP) (*Response, error) {
 			IP:       ip,
 			Registry: strings.ToUpper(values[3]),
 		}
+		
+		var err error
+		
+		asn, err := parseASNs(values[0])
+		if err != nil {
+			return nil, errors.Wrapf(err, "Could not parse ASN (%s)", values[0])
+		}
+		ret.ASN = asn[0]
 
 		ret.Country = strings.TrimSpace(values[2])
+
+		asnResponse, err := c.LookupASN(ret.ASN)
+		if err != nil {
+			return nil, fmt.Errorf("Could not retrieve ASN (%s): %s", ret.ASN.String(), err.Error())
+		}
 		
 		ret.Name = asnResponse.Name
 
